@@ -1,0 +1,23 @@
+<h1>RSP Desk Booking</h1>
+<table border="1" style="position: relative; float: left; height: 600px;">
+    <tr><td colspan="3">
+        <input type="text" id="name_input">
+    </td><td colspan="3">
+        <input type="hidden" value="{{startDate}}" id="start_date">
+        {{startDate}} - {{endDate}}
+        <button><<</button>
+        <button>>></button>
+    </td></tr>
+    <tr><th>Desk</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr>
+    {{#each bookings}}
+    <tr>
+        <td>{{@index}}</td>
+        {{#each this}}
+        <td>
+            <input type="checkbox" {{#if this}}checked{{/if}} value="{{@../index}}_{{@index}}">
+        </td>
+        {{/each}}
+    {{/each}}
+</table>
+<img src="images/desks.png" style="position: relative; float: left; height: 600px;">
+
