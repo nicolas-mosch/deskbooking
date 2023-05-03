@@ -1,23 +1,31 @@
-<h1>RSP Desk Booking</h1>
-<table border="1" style="position: relative; float: left; height: 600px;">
+<h1>NW 172 Desk Booking</h1>
+<form action="/" method="POST">
+<table class="table-bordered" style="position: relative; float: left; height: 600px;">
     <tr><td colspan="3">
-        <input type="text" id="name_input">
+        <input type="text" id="name_input" name="name">
     </td><td colspan="3">
-        <input type="hidden" value="{{startDate}}" id="start_date">
-        {{startDate}} - {{endDate}}
-        <button><<</button>
-        <button>>></button>
+            <input id="week" type="week" class="form-control" name="newweek" value="{{year}}-W{{week}}" onchange="this.form.submit()">
+            <input type="hidden" name="week" value="{{year}}-W{{week}}">
     </td></tr>
-    <tr><th>Desk</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr>
+    <tr>
+        <th>Desk</th>
+        <th>Mon ({{days.[0]}})</th>
+        <th>Tue ({{days.[1]}})</th>
+        <th>Wed ({{days.[2]}})</th>
+        <th>Thu ({{days.[3]}})</th>
+        <th>Fri ({{days.[4]}})</th>
+    </tr>
     {{#each bookings}}
     <tr>
         <td>{{@index}}</td>
         {{#each this}}
         <td>
-            <input type="checkbox" {{#if this}}checked{{/if}} value="{{@../index}}_{{@index}}">
+            <input type="button" class="btn-check" id="{{@../index}}_{{@index}}" value="{{@../index}}_{{@index}}" autocomplete="off" onchange="this.form.submit()">
+            <label class="btn btn-outline-primary" for="{{@../index}}_{{@index}}">Available</label><br>
+            {{!-- <input type="checkbox" {{#if this}}checked{{/if}} value="{{@../index}}_{{@index}}"> --}}
         </td>
         {{/each}}
     {{/each}}
 </table>
-<img src="images/desks.png" style="position: relative; float: left; height: 600px;">
-
+</form>
+<img src="/public/images/desks.png" style="position: relative; float: left; height: 600px;">
