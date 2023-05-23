@@ -1,4 +1,5 @@
 var express = require('express');
+const { start } = require('repl');
 var router = express.Router();
 const ObjectID = require('mongodb').ObjectId;
 
@@ -14,6 +15,14 @@ function getDateOfISOWeek(w, y) {
   return ISOweekStart;
 }
 
+function getDateStamp(date){
+  let day = date.getDate();
+  let month = date.getMonth();
+  let year = date.getFullYear();
+
+  return year + (month < 10 ? "0" : "") + month + (day < 10 ? "0" : "") + day;
+}
+
 function render(week, year, req, res){
   let startDate = getDateOfISOWeek(week, year);
 
@@ -22,22 +31,26 @@ function render(week, year, req, res){
     days.push(i);
   }
 
-  req.collection.find({})
-    .toArray()
-    .then(results => {
-      console.log("resuts: ", results);
+  req.collection.findOne({_id: `${year}-W${week}`})
+    .then(result => {
+      if(result == null) result = {};
+      console.log("result", result)
       bookings = []
       for(var i = 0; i < 16; ++i){
         bookings.push([]);
         for(var j = 0; j < 5; ++j){
-          bookings[i].push(null);
+          key = `${i}_${j}`
+          bookings[i].push((key in result && result[key].length ? result[key] : null));
         }
       }
+      console.log("bookings: ", bookings)
       res.render('index', { 
-        bookings: bookings, 
+        bookings: bookings,
         week: week, 
-        year: year, 
-        days: days });
+        year: year,
+        startDate: startDate.toDateString(),
+        days: days 
+      });
     })
     .catch(error => res.send(error));
 }
@@ -50,27 +63,21 @@ router.get('/', function(req, res, next) {
   render(week, year, req, res);
 });
 
-router.post('/', (req, res, next) => {
-  console.log(req.body)
+router.get('/:year/:week', function(req, res, next) {
+  render(req.params.week, req.params.year, req, res);
+});
+
+router.post('/reserve', (req, res, next) => {
   let year = req.body.week.split("-")[0];
   let week = req.body.week.split("W")[1];
-  bookings = {};
-  if(Array.isArray(req.body.bookings)){
-    for(let i in req.body.bookings){
-      bookings[req.body.bookings[i]] = req.body.name;
-    }
-  }else{
-    bookings[req.body.bookings] = req.body.name;
+  if(req.body.desk && req.body.week && req.body.day){
+    req.collection.updateOne(
+      { _id: req.body.week },
+      { $set: {_id: req.body.week, [`${req.body.desk}_${req.body.day}`]: req.body.name } },
+      { upsert: true }
+    );
   }
-  
-  console.log(bookings);
-  req.collection.updateOne(
-    { week, name: req.body.name, desk: },
-    { $push: {bookings: bookings} },
-    {upsert: true}
-  );
-  
-  render(week, year, req, res);
+  res.send(200);
 });
 
 module.exports = router;

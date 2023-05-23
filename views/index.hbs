@@ -1,11 +1,10 @@
 <h1>NW 172 Desk Booking</h1>
-<form action="/" method="POST">
 <table class="table-bordered" style="position: relative; float: left; height: 600px;">
     <tr><td colspan="3">
         <input type="text" id="name_input" name="name">
     </td><td colspan="3">
-            <input id="week" type="week" class="form-control" name="newweek" value="{{year}}-W{{week}}" onchange="this.form.submit()">
-            <input type="hidden" name="week" value="{{year}}-W{{week}}">
+            <input type="hidden" id="start_date" value="{{startDate}}">
+            <input id="week" type="week" class="form-control" value="{{year}}-W{{week}}">
     </td></tr>
     <tr>
         <th>Desk</th>
@@ -20,12 +19,15 @@
         <td>{{@index}}</td>
         {{#each this}}
         <td>
-            <input type="button" class="btn-check" id="{{@../index}}_{{@index}}" value="{{@../index}}_{{@index}}" autocomplete="off" onchange="this.form.submit()">
-            <label class="btn btn-outline-primary" for="{{@../index}}_{{@index}}">Available</label><br>
-            {{!-- <input type="checkbox" {{#if this}}checked{{/if}} value="{{@../index}}_{{@index}}"> --}}
+            {{#if this}}
+            <input type="checkbox" class="btn-check reserve" id="{{@../index}}_{{@index}}" value="{{@../index}}_{{@index}}" checked/>
+            <label class="btn btn-outline-primary" for="{{@../index}}_{{@index}}">{{this}}</label> 
+            {{else}}
+            <input type="checkbox" class="btn-check reserve" id="{{@../index}}_{{@index}}" value="{{@../index}}_{{@index}}" />
+            <label class="btn btn-outline-primary" for="{{@../index}}_{{@index}}">Available</label>
+            {{/if}}
         </td>
         {{/each}}
     {{/each}}
 </table>
-</form>
 <img src="/public/images/desks.png" style="position: relative; float: left; height: 600px;">
